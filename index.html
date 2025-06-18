@@ -219,17 +219,35 @@
     </div>
   </footer>
 
-  <script src="js/scripts.js">
-    const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-      }
-    });
-  }, { threshold: 0.1 });
-
-  reveals.forEach(reveal => observer.observe(reveal));
+   <script>
+    fetch('http://localhost:8080/api/produtos')
+      .then(res => res.json())
+      .then(produtos => {
+        const grid = document.getElementById('productGrid');
+        produtos.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'product-card reveal delay-1';
+          card.innerHTML = `
+            <a href="produto.html?id=${p.id}" class="product-link">
+              <div class="product-image">
+                <span class="discount-badge">${p.promocao ? p.promocao : ''}</span>
+                <img src="${p.imagem}" alt="${p.nome}">
+              </div>
+              <div class="product-info">
+                <h3 class="product-name">${p.nome}</h3>
+                <div class="product-pricing">
+                  <span class="current-price">R$ ${p.preco.toFixed(2)}</span>
+                  <span class="old-price">R$ ${p.precoOriginal.toFixed(2)}</span>
+                </div>
+                <p class="installments">em até 5x de <strong>R$ ${(p.preco / 5).toFixed(2)}</strong></p>
+                <button class="add-to-cart">Adicionar ao Carrinho</button>
+              </div>
+            </a>
+          `;
+          grid.appendChild(card);
+        });
+      });
   </script>
+  <script src="js/scripts.js"></script>
 </body>
 </html>

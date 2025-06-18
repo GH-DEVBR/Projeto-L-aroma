@@ -990,5 +990,48 @@ footer {
   color: inherit;
   display: block;
 }
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.product-card {
+  width: 300px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  overflow: hidden;
+  text-align: center;
+  background: #fff;
+  transition: transform 0.3s;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+}
+
+.product-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.product-card .price {
+  margin: 15px 0;
+}
+
+.product-card .current {
+  color: #ff3366;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.product-card .original {
+  text-decoration: line-through;
+  color: #999;
+  margin-left: 10px;
+}
 
 

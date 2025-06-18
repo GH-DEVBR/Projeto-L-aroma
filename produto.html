@@ -56,6 +56,8 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
 
+    
+
     .product-details {
       flex: 1 1 500px;
     }
@@ -228,6 +230,9 @@
       border-radius: 10px;
     }
   </style>
+
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+
 </head>
 <body>
   <div class="product-page">
@@ -242,18 +247,20 @@
         <span class="old-price">R$ 297,90</span>
       </div>
       <p class="installments">ou em até 5x de <strong>R$ 35,98</strong> sem juros</p>
-      <button class="buy-button">COMPRAR AGORA</button>
+
+<!-- Botão para criar pedido (você pode amarrar o clique para redirecionar para a página de pagamento) -->
+<button id="btn-comprar" class="buy-button" style="margin-top: 20px;">
+  COMPRAR AGORA
+</button>
+
+
+
       <div class="product-description">
         <h2>Descrição</h2>
         <p><strong>212 VIP Black</strong> é a fragrância ideal para quem quer marcar presença com elegância. Notas de absinto, lavanda e baunilha negra tornam esse perfume magnético e sofisticado.</p>
         <p>Importado, original e com brinde exclusivo da L'AROMA. Embalagem pronta para presente.</p>
         <p>Volume: 100ml<br>Concentração: Eau de Parfum (EDP)<br>Gênero: Masculino</p>
       </div>
-
-      <section class="related-products">
-        <h2>Você também pode gostar</h2>
-        <div class="related-grid" id="relatedGrid"></div>
-      </section>
 
       <section class="faq-section">
         <h2 class="faq-title">Dúvidas Frequentes</h2>
@@ -275,49 +282,98 @@
       <a href="index.html" class="back-link">← Voltar à Coleção</a>
     </div>
   </div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
 
-  <script>
-    document.querySelectorAll('.faq-question').forEach(btn => {
-      btn.addEventListener('click', () => {
-        btn.parentElement.classList.toggle('active');
-      });
-    });
+  // Buscar produto pelo ID
+  fetch(`http://localhost:8080/api/produtos/${id}`)
+    .then(res => res.json())
+    .then(p => {
+      document.querySelector('.product-image img').src = p.imagem;
+      document.querySelector('.product-image img').alt = p.nome;
+      document.querySelector('.product-details h1').textContent = p.nome;
+      document.querySelector('.current-price').textContent = `R$ ${p.preco.toFixed(2)}`;
+      document.querySelector('.old-price').textContent = `R$ ${p.precoOriginal.toFixed(2)}`;
+      document.querySelector('.installments strong').textContent = `R$ ${(p.preco / 5).toFixed(2)}`;
+      document.querySelector('.badge').textContent = p.promocao;
+      document.querySelector('.product-description').innerHTML = `<h2>Descrição</h2><p>${p.descricao}</p>`;
+    })
+    .catch(() => alert('❌ Produto não encontrado.'));
 
-    const relacionados = [
-      {
-        nome: "Ferrari Black",
-        imagem: "img/black.webp",
-        preco: "R$ 179,90",
-        precoAntigo: "R$ 297,90",
-        link: "produto.html?id=2"
-      },
-      {
-        nome: "Mercedes Black",
-        imagem: "img/mercedes.webp",
-        preco: "R$ 267,00",
-        precoAntigo: "R$ 377,90",
-        link: "produto.html?id=3"
+  // Evento no botão de compra
+  document.querySelector('.buy-button').addEventListener('click', comprarAgora);
+
+  // Função para criar pedido
+  function comprarAgora() {
+    const email = document.querySelector('#email-cliente').value.trim();
+
+    if (!email) {
+      alert('⚠️ Por favor, informe seu e-mail.');
+      return;
+    }
+
+    fetch('http://localhost:8080/api/pedidos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        produtoId: id,
+        clienteEmail: email
+      })
+    })
+    .then(res => {
+      if (res.ok) {
+        alert("✅ Pedido realizado com sucesso!");
+        document.querySelector('#email-cliente').value = "";
+      } else {
+        alert("❌ Erro ao realizar o pedido.");
       }
-    ];
-
-    const container = document.getElementById('relatedGrid');
-    relacionados.forEach(p => {
-      const card = document.createElement('div');
-      card.classList.add('related-card');
-      card.innerHTML = `
-        <a href="${p.link}">
-          <img src="${p.imagem}" alt="${p.nome}">
-          <div class="related-info">
-            <h3>${p.nome}</h3>
-            <div class="price">${p.preco}</div>
-            <div class="old-price">${p.precoAntigo}</div>
-          </div>
-        </a>`;
-      container.appendChild(card);
+    })
+    .catch(() => {
+      alert("⚠️ Erro na conexão com o servidor.");
     });
-  </script>
+  }
+</script>
+
+<script>
+  const mp = new MercadoPago('TEST-40c7de58-7ff3-4625-957b-5f50881fe9f5');
+
+  const bricksBuilder = mp.bricks();
+
+  bricksBuilder.create("cardPayment", "form-checkout", {
+    initialization: {
+      amount: 179.90, // valor do produto (pode ser dinâmico depois)
+    },
+    customization: {
+      paymentMethods: {
+        ticket: 'all',
+        bankTransfer: 'all',
+        creditCard: 'all',
+      },
+    },
+    callbacks: {
+      onReady: () => {
+        console.log("Formulário carregado");
+      },
+      onSubmit: (cardFormData) => {
+        console.log("Dados do cartão:", cardFormData);
+        alert("💳 Pagamento de teste enviado!\nUse cartão de teste para simular.");
+      },
+      onError: (error) => {
+        console.error(error);
+        alert("Erro ao processar pagamento.");
+      }
+    }
+  });
+</script>
+
+
 </body>
 </html>
+
+
+
+
 
 
 
