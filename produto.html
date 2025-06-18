@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>212 VIP Black | L'AROMA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #000;
+      --secondary: #fff;
+      --accent: #ff3366;
+      --gold: #d4af37;
+      --dark-gray: #333;
+      --light-gray: #f4f4f4;
+      --font-title: 'Montserrat', sans-serif;
+      --font-elegant: 'Playfair Display', serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-title);
+      background-color: var(--secondary);
+      color: var(--primary);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .product-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 50px;
+      align-items: flex-start;
+    }
+
+    .product-image {
+      flex: 1 1 450px;
+    }
+
+    .product-image img {
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .product-details {
+      flex: 1 1 500px;
+    }
+
+    .product-details h1 {
+      font-family: var(--font-elegant);
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .price-wrapper {
+      margin: 20px 0;
+    }
+
+    .current-price {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .old-price {
+      font-size: 1.2rem;
+      text-decoration: line-through;
+      color: #999;
+      margin-left: 15px;
+    }
+
+    .installments {
+      margin: 10px 0 30px;
+      font-size: 1rem;
+      color: var(--dark-gray);
+    }
+
+    .buy-button {
+      background-color: var(--primary);
+      color: var(--secondary);
+      padding: 16px 40px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s ease;
+    }
+
+    .buy-button:hover {
+      background-color: var(--accent);
+      transform: scale(1.03);
+    }
+
+    .product-description {
+      margin-top: 40px;
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.8;
+    }
+
+    .back-link {
+      display: block;
+      margin: 40px auto;
+      text-align: center;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--gold);
+      color: #fff;
+      font-size: 0.85rem;
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .related-products {
+      margin-top: 60px;
+    }
+
+    .related-products h2 {
+      font-family: var(--font-elegant);
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    .related-grid {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .related-card {
+      width: 280px;
+      background-color: #fefefe;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: 0.3s ease;
+    }
+
+    .related-card img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+    }
+
+    .related-info {
+      padding: 20px;
+    }
+
+    .related-info h3 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .related-info .price {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .related-info .old-price {
+      font-size: 0.95rem;
+      color: #999;
+      text-decoration: line-through;
+    }
+
+    .faq-section {
+      margin-top: 50px;
+    }
+
+    .faq-title {
+      font-family: var(--font-elegant);
+      font-size: 2rem;
+      margin-bottom: 25px;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 15px;
+    }
+
+    .faq-question {
+      padding: 15px;
+      cursor: pointer;
+      background-color: var(--light-gray);
+      font-weight: 600;
+      position: relative;
+    }
+
+    .faq-question:hover {
+      background-color: #ececec;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 15px;
+      background-color: #fafafa;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    .returns-section {
+      margin-top: 60px;
+      padding: 40px;
+      background-color: #f9f9f9;
+      border-left: 6px solid var(--accent);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="product-page">
+    <div class="product-image">
+      <img src="img/212.jpg" alt="212 VIP Black">
+    </div>
+    <div class="product-details">
+      <span class="badge">40% OFF + Brinde Exclusivo</span>
+      <h1>212 VIP Black</h1>
+      <div class="price-wrapper">
+        <span class="current-price">R$ 179,90</span>
+        <span class="old-price">R$ 297,90</span>
+      </div>
+      <p class="installments">ou em até 5x de <strong>R$ 35,98</strong> sem juros</p>
+      <button class="buy-button">COMPRAR AGORA</button>
+      <div class="product-description">
+        <h2>Descrição</h2>
+        <p><strong>212 VIP Black</strong> é a fragrância ideal para quem quer marcar presença com elegância. Notas de absinto, lavanda e baunilha negra tornam esse perfume magnético e sofisticado.</p>
+        <p>Importado, original e com brinde exclusivo da L'AROMA. Embalagem pronta para presente.</p>
+        <p>Volume: 100ml<br>Concentração: Eau de Parfum (EDP)<br>Gênero: Masculino</p>
+      </div>
+
+      <section class="related-products">
+        <h2>Você também pode gostar</h2>
+        <div class="related-grid" id="relatedGrid"></div>
+      </section>
+
+      <section class="faq-section">
+        <h2 class="faq-title">Dúvidas Frequentes</h2>
+        <div class="faq-item"><div class="faq-question">O perfume é original?</div><div class="faq-answer">Sim, todos os nossos perfumes são 100% originais e importados, com nota fiscal e lacre de fábrica.</div></div>
+        <div class="faq-item"><div class="faq-question">Em quanto tempo recebo meu pedido?</div><div class="faq-answer">O prazo de entrega varia conforme sua localidade, geralmente entre 2 a 7 dias úteis.</div></div>
+        <div class="faq-item"><div class="faq-question">Acompanha embalagem para presente?</div><div class="faq-answer">Sim! Enviamos com embalagem premium, ideal para presentear.</div></div>
+        <div class="faq-item"><div class="faq-question">Posso parcelar minha compra?</div><div class="faq-answer">Claro! Aceitamos até 5x sem juros no cartão de crédito.</div></div>
+        <div class="faq-item"><div class="faq-question">Recebo código de rastreio?</div><div class="faq-answer">Sim! Assim que o pedido for despachado, você receberá um e-mail com o código de rastreio e o link para acompanhar a entrega em tempo real.</div></div>
+      </section>
+
+      <section class="returns-section">
+        <h2>Trocas & Devoluções</h2>
+        <p>A L'AROMA segue o Código de Defesa do Consumidor e garante uma política de troca e devolução transparente.</p>
+        <p>Em caso de arrependimento, o cliente pode devolver o produto em até 7 dias corridos após o recebimento, sem indícios de uso e com todos os itens incluídos.</p>
+        <p>Se o produto não servir, é possível solicitar a primeira troca gratuitamente dentro do mesmo prazo, desde que o item não tenha sido utilizado.</p>
+        <p>A L'AROMA está comprometida com a sua satisfação e pronta para oferecer suporte sempre que necessário.</p>
+      </section>
+
+      <a href="index.html" class="back-link">← Voltar à Coleção</a>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.parentElement.classList.toggle('active');
+      });
+    });
+
+    const relacionados = [
+      {
+        nome: "Ferrari Black",
+        imagem: "img/black.webp",
+        preco: "R$ 179,90",
+        precoAntigo: "R$ 297,90",
+        link: "produto.html?id=2"
+      },
+      {
+        nome: "Mercedes Black",
+        imagem: "img/mercedes.webp",
+        preco: "R$ 267,00",
+        precoAntigo: "R$ 377,90",
+        link: "produto.html?id=3"
+      }
+    ];
+
+    const container = document.getElementById('relatedGrid');
+    relacionados.forEach(p => {
+      const card = document.createElement('div');
+      card.classList.add('related-card');
+      card.innerHTML = `
+        <a href="${p.link}">
+          <img src="${p.imagem}" alt="${p.nome}">
+          <div class="related-info">
+            <h3>${p.nome}</h3>
+            <div class="price">${p.preco}</div>
+            <div class="old-price">${p.precoAntigo}</div>
+          </div>
+        </a>`;
+      container.appendChild(card);
+    });
+  </script>
+</body>
+</html>
+
+
+
