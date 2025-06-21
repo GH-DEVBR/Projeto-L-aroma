@@ -120,73 +120,54 @@
 
   </div>
 
-  <!-- Script de lógica de produto e checkout -->
-  <script>
-    // Inicializa SDK MercadoPago (substitua pelo seu public key)
-    const mp = new MercadoPago('TEST-40c7de58-7ff3-4625-957b-5f50881fe9f5', { locale: 'pt-BR' });
+<script>
+  // 1) Inicializa o SDK
+  const mp = new MercadoPago('SUA_PUBLIC_KEY', { locale: 'pt-BR' });
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get('id');
-      try {
-        const res = await fetch(`http://localhost:8081/produtos/${id}`);
-        const p = await res.json();
+  document.addEventListener('DOMContentLoaded', async () => {
+    // 2) Pega e valida o parâmetro `id`
+    const idParam = new URLSearchParams(window.location.search).get('id');
+    const id = Number(idParam);
+    if (!idParam || isNaN(id)) {
+      // redireciona para home se não tiver id ou id inválido
+      return window.location.href = 'index.html';
+    }
 
-        // Preenche dados na página
-        document.getElementById('detailImage').src = p.imagemUrl;
-        document.getElementById('detailImage').alt = p.nome;
-        document.getElementById('detailName').textContent = p.nome;
-        document.getElementById('detailPrice').textContent = `R$ ${p.preco.toFixed(2)}`;
-        document.getElementById('detailOldPrice').textContent = p.precoOriginal ? `R$ ${p.precoOriginal.toFixed(2)}` : '';
-        document.getElementById('detailInstallments').textContent = `5x de R$ ${(p.preco/5).toFixed(2)}`;
-        document.getElementById('detailBadge').textContent = p.promocao || '';
-        document.getElementById('detailDesc').innerHTML = `<h2>Descrição</h2><p>${p.descricao}</p>`;
-      } catch (err) {
-        console.error('Erro ao carregar produto:', err);
-        alert('❌ Produto não encontrado.');
+    try {
+      // 3) Faz o fetch e verifica o status
+      const res = await fetch(`http://localhost:8081/produtos/${id}`);
+      if (!res.ok) {
+        // status 4xx ou 5xx → vai para catch
+        throw new Error(`Produto não encontrado (status ${res.status})`);
       }
-    });
+      const p = await res.json();
 
-    document.getElementById('btnComprar').addEventListener('click', async () => {
-      const email = document.getElementById('email-cliente').value.trim();
-      if (!email) {
-        alert('⚠️ Por favor, informe seu e-mail.');
-        return;
+      // 4) Garante que 'p' veio certo
+      if (!p || typeof p.preco !== 'number') {
+        throw new Error('Resposta inesperada da API');
       }
 
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get('id');
-      const pedido = {
-        itens: [{ produto: { id: Number(id) }, quantidade: 1 }],
-        clienteEmail: email
-      };
+      // 5) Preenche a página **somente agora**
+      document.getElementById('detailImage').src = p.imagemUrl;
+      document.getElementById('detailImage').alt = p.nome;
+      document.getElementById('detailName').textContent = p.nome;
+      document.getElementById('detailPrice').textContent = `R$ ${p.preco.toFixed(2)}`;
+      document.getElementById('detailOldPrice').textContent = 
+        p.precoOriginal ? `R$ ${p.precoOriginal.toFixed(2)}` : '';
+      document.getElementById('detailInstallments').textContent = 
+        `5x de R$ ${(p.preco / 5).toFixed(2)}`;
+      document.getElementById('detailBadge').textContent = p.promocao || '';
+      document.getElementById('detailDesc').innerHTML = `<h2>Descrição</h2><p>${p.descricao}</p>`;
+    } catch (err) {
+      console.error('Erro ao carregar produto:', err);
+      // volta pra home sem estourar outro erro
+      return window.location.href = 'index.html';
+    }
+  });
 
-      try {
-        const checkoutRes = await fetch('http://localhost:8081/pedidos/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pedido)
-        });
-        const { preferenceId } = await checkoutRes.json();
+  // restante do seu código de checkout…
+</script>
 
-        // Renderiza Bricks
-        mp.bricks().create('wallet', 'form-checkout', {
-          initialization: { preferenceId }
-        });
-      } catch (err) {
-        console.error('Erro no checkout:', err);
-        alert('❌ Erro ao iniciar o checkout.');
-      }
-    });
-
-    // FAQ toggle
-    document.querySelectorAll('.faq-question').forEach(q => {
-      q.addEventListener('click', () => {
-        const item = q.parentElement;
-        item.classList.toggle('active');
-      });
-    });
-  </script>
 </body>
 </html>
 
