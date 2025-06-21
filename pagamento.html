@@ -2,136 +2,109 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pagamento | L'AROMA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background-color: #fff;
-      color: #000;
-      padding: 40px;
-      max-width: 600px;
-      margin: auto;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 10px;
-    }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 20px;
-    }
-    .form-group {
-      margin-bottom: 20px;
-    }
-    #form-checkout {
-      margin-top: 40px;
-    }
-    #form-checkout__submit {
-      margin-top: 20px;
-      padding: 16px 40px;
-      background-color: #000;
-      color: #fff;
-      border: none;
-      border-radius: 40px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      font-weight: 600;
-      transition: 0.3s ease;
-    }
-    #form-checkout__submit:hover {
-      background-color: #ff3366;
-      transform: scale(1.03);
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carrinho & Pagamento | L'AROMA</title>
+
+  <!-- Fontes e Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- SDK Mercado Pago -->
   <script src="https://sdk.mercadopago.com/js/v2"></script>
 </head>
 <body>
-  <h1>Finalizar Pedido</h1>
+  <!-- Cabeçalho (mesmo do index.html) -->
+  <header>
+    <div class="container nav-container">
+      <a href="index.html" class="logo">L'<span>AROMA</span></a>
+      <!-- ... nav idêntico ao index.html ... -->
+    </div>
+  </header>
 
-  <form id="form-endereco" style="margin-top: 40px;">
-    <div style="margin-bottom: 16px;">
-      <label for="cep">CEP:</label>
-      <input type="text" id="cep" maxlength="9" onblur="buscarEndereco()" placeholder="Digite seu CEP" required>
+  <main class="container" style="padding: 40px 20px;">
+    <h1 class="detail-title">Seu Carrinho</h1>
+    <div id="cartContainer">
+      <ul id="cartItems" class="cart-list"></ul>
+      <div class="cart-summary">
+        <p>Total: <strong>R$ <span id="cartTotal">0.00</span></strong></p>
+      </div>
+      <input type="email" id="email-cliente" placeholder="Seu e-mail" required class="email-input" />
+      <button id="btnCheckout" class="buy-button">Finalizar Compra</button>
     </div>
-    <div style="margin-bottom: 16px;">
-      <label for="rua">Rua:</label>
-      <input type="text" id="rua" readonly placeholder="Rua">
-    </div>
-    <div style="margin-bottom: 16px;">
-      <label for="bairro">Bairro:</label>
-      <input type="text" id="bairro" readonly placeholder="Bairro">
-    </div>
-    <div style="margin-bottom: 16px;">
-      <label for="cidade">Cidade:</label>
-      <input type="text" id="cidade" readonly placeholder="Cidade">
-    </div>
-    <div style="margin-bottom: 16px;">
-      <label for="uf">Estado:</label>
-      <input type="text" id="uf" readonly placeholder="Estado">
-    </div>
-  </form>
 
-  <div id="form-checkout"></div>
-  <button id="form-checkout__submit">PAGAR AGORA</button>
-  <p id="form-checkout__messages"></p>
+    <!-- Container onde o MercadoPago Bricks será renderizado -->
+    <div id="form-checkout" class="bricks-container"></div>
+  </main>
 
+  <!-- Scripts -->
   <script>
-    const mp = new MercadoPago('TEST-40c7de58-7ff3-4625-957b-5f50881fe9f5');
-    const bricksBuilder = mp.bricks();
+    // Inicializa o SDK MercadoPago (substitua pela sua public key)
+    const mp = new MercadoPago('TEST-40c7de58-7ff3-4625-957b-5f50881fe9f5', { locale: 'pt-BR' });
 
-    bricksBuilder.create("cardPayment", "form-checkout", {
-      initialization: {
-        amount: 179.90
-      },
-      customization: {
-        paymentMethods: {
-          ticket: 'all',
-          bankTransfer: 'all',
-          creditCard: 'all'
-        }
-      },
-      callbacks: {
-        onReady: () => console.log("Form carregado"),
-        onSubmit: (cardFormData) => {
-          alert("Pagamento de teste enviado! Use um cartão de teste.");
-        },
-        onError: (error) => {
-          console.error(error);
-          alert("Erro ao processar pagamento.");
-        }
-      }
+    // Funções do carrinho usando localStorage
+    const CART_KEY = 'carrinho';
+    function getCart() {
+      return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    }
+    function clearCheckout() {
+      document.getElementById('form-checkout').innerHTML = '';
+    }
+
+    function renderCart() {
+      const cart = getCart();
+      const listEl = document.getElementById('cartItems');
+      listEl.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'cart-item';
+        li.textContent = `${item.nome} x${item.quantidade} - R$ ${(item.preco * item.quantidade).toFixed(2)}`;
+        listEl.appendChild(li);
+        total += item.preco * item.quantidade;
+      });
+      document.getElementById('cartTotal').textContent = total.toFixed(2);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCart();
     });
 
-    function buscarEndereco() {
-      const cep = document.getElementById("cep").value.replace(/\D/g, '');
-
-      if (cep.length !== 8) {
-        alert("❌ CEP inválido. Digite 8 números.");
+    document.getElementById('btnCheckout').addEventListener('click', async () => {
+      const email = document.getElementById('email-cliente').value.trim();
+      if (!email) {
+        alert('⚠️ Por favor, informe seu e-mail.');
         return;
       }
+      const cart = getCart();
+      if (cart.length === 0) {
+        alert('⚠️ Seu carrinho está vazio.');
+        return;
+      }
+      // Estrutura de pedido para o backend
+      const pedido = {
+        itens: cart.map(i => ({ produto: { id: i.id }, quantidade: i.quantidade })),
+        clienteEmail: email
+      };
 
-      fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.erro) {
-            alert("❌ CEP não encontrado.");
-            return;
-          }
+      try {
+        const res = await fetch('http://localhost:8081/pedidos/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pedido)
+        });
+        const { preferenceId } = await res.json();
 
-          document.getElementById("rua").value = data.logradouro || "";
-          document.getElementById("bairro").value = data.bairro || "";
-          document.getElementById("cidade").value = data.localidade || "";
-          document.getElementById("uf").value = data.uf || "";
-        })
-        .catch(() => alert("⚠️ Erro ao buscar o CEP."));
-    }
+        // Limpa qualquer checkout anterior e renderiza novo
+        clearCheckout();
+        mp.bricks().create('wallet', 'form-checkout', {
+          initialization: { preferenceId }
+        });
+      } catch (err) {
+        console.error('Erro ao iniciar checkout:', err);
+        alert('❌ Erro ao processar o checkout.');
+      }
+    });
   </script>
 </body>
 </html>
-

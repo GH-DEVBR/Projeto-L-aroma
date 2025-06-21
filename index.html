@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>L'AROMA | Perfumes Importados</title>
+
+  <!-- Fontes e Ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
   <!-- Cabeçalho -->
   <header>
     <div class="container nav-container">
       <a href="#" class="logo">L'<span>AROMA</span></a>
-      
       <nav>
         <ul class="nav-links">
           <li><a href="#home" class="active">Home</a></li>
@@ -30,12 +30,10 @@
           <li><a href="#sobre">Sobre</a></li>
           <li><a href="#contato">Contato</a></li>
         </ul>
-        
         <a href="#" class="cart-icon">
           <i class="fas fa-shopping-bag"></i>
           <span class="cart-count">3</span>
         </a>
-        
         <button class="mobile-menu-btn">
           <i class="fas fa-bars"></i>
         </button>
@@ -44,24 +42,22 @@
   </header>
 
   <!-- Seção Hero -->
-<section class="hero-section" id="home">
-  <div class="container">
-    <div class="hero-content reveal">
-      <h1>L'AROMA</h1>
-      <p class="hero-subtext">
-        O perfume certo transforma sua imagem.<br>
-        Viva com elegância. <strong>Viva L'AROMA.</strong>
-      </p>
-      <a href="#produtos" class="btn">Ver Coleção</a>
+  <section class="hero-section" id="home">
+    <div class="container">
+      <div class="hero-content reveal">
+        <h1>L'AROMA</h1>
+        <p class="hero-subtext">
+          O perfume certo transforma sua imagem.<br>
+          Viva com elegância. <strong>Viva L'AROMA.</strong>
+        </p>
+        <a href="#produtos" class="btn">Ver Coleção</a>
+      </div>
     </div>
-  </div>
-</section>
-
+  </section>
 
   <div class="section-divider"></div>
 
-
-  <!-- Seção de Produtos -->
+ <!-- Seção de Produtos -->
  <!-- Seção de Produtos -->
 <section class="products-section" id="produtos">
   <div class="container">
@@ -133,15 +129,13 @@
 
   <div class="section-divider"></div>
 
-
   <!-- Banner Section -->
   <section class="banner-section">
     <div class="container">
       <div class="banner-content">
         <div class="banner-text reveal">
           <h2>Desperte Seu Estilo Com Fragrâncias Exclusivas</h2>
-          <p>Cada perfume da L'AROMA é uma obra-prima olfativa, importada das mais renomadas casas internacionais. Selecionamos apenas fragrâncias autênticas, intensas e sofisticadas — para quem deseja se destacar com elegância e personalidade.
-</p>
+          <p>Cada perfume da L'AROMA é uma obra-prima olfativa, importada das mais renomadas casas internacionais. Selecionamos apenas fragrâncias autênticas, intensas e sofisticadas — para quem deseja se destacar com elegância e personalidade.</p>
           <a href="#produtos" class="btn">Explorar Coleção</a>
         </div>
         <div class="banner-image reveal delay-1">
@@ -152,7 +146,6 @@
   </section>
 
   <div class="section-divider"></div>
-
 
   <!-- Newsletter -->
   <section class="newsletter-section">
@@ -182,7 +175,6 @@
             <a href="#"><i class="fab fa-pinterest"></i></a>
           </div>
         </div>
-        
         <div class="footer-column reveal delay-1">
           <h3>Links Rápidos</h3>
           <ul>
@@ -192,7 +184,6 @@
             <li><a href="#contato">Contato</a></li>
           </ul>
         </div>
-        
         <div class="footer-column reveal delay-2">
           <h3>Categorias</h3>
           <ul>
@@ -202,7 +193,6 @@
             <li><a href="#armani">Giorgio Armani</a></li>
           </ul>
         </div>
-        
         <div class="footer-column reveal delay-3">
           <h3>Contato</h3>
           <ul>
@@ -212,42 +202,49 @@
           </ul>
         </div>
       </div>
-      
       <div class="footer-bottom reveal">
         <p>&copy; 2025 L'AROMA. Todos os direitos reservados.</p>
       </div>
     </div>
   </footer>
 
-   <script>
-    fetch('http://localhost:8080/api/produtos')
-      .then(res => res.json())
-      .then(produtos => {
+  <!-- Script de busca e renderização de produtos -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('http://localhost:8081/produtos');
+        const produtos = await res.json();
         const grid = document.getElementById('productGrid');
         produtos.forEach(p => {
           const card = document.createElement('div');
-          card.className = 'product-card reveal delay-1';
+          card.classList.add('product-card', 'reveal');
           card.innerHTML = `
             <a href="produto.html?id=${p.id}" class="product-link">
               <div class="product-image">
-                <span class="discount-badge">${p.promocao ? p.promocao : ''}</span>
-                <img src="${p.imagem}" alt="${p.nome}">
+                ${p.promocao ? `<span class="discount-badge">${p.promocao}</span>` : ''}
+                <img src="${p.imagemUrl}" alt="${p.nome}">
               </div>
               <div class="product-info">
                 <h3 class="product-name">${p.nome}</h3>
                 <div class="product-pricing">
                   <span class="current-price">R$ ${p.preco.toFixed(2)}</span>
-                  <span class="old-price">R$ ${p.precoOriginal.toFixed(2)}</span>
+                  ${p.precoOriginal ? `<span class="old-price">R$ ${p.precoOriginal.toFixed(2)}</span>` : ''}
                 </div>
-                <p class="installments">em até 5x de <strong>R$ ${(p.preco / 5).toFixed(2)}</strong></p>
+                <p class="installments">em até 5x de <strong>R$ ${(p.preco/5).toFixed(2)}</strong></p>
                 <button class="add-to-cart">Adicionar ao Carrinho</button>
               </div>
             </a>
           `;
           grid.appendChild(card);
         });
-      });
+      } catch (err) {
+        console.error('Erro ao carregar produtos:', err);
+      }
+    });
   </script>
+
+  <!-- Scripts de animação e menu -->
   <script src="js/scripts.js"></script>
 </body>
 </html>
+

@@ -4,8 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>212 VIP Black | L'AROMA</title>
+
+  <!-- Fontes e Ícones -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- SDK Mercado Pago -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+  <!-- Estilos específicos da página de produto -->
   <style>
     :root {
       --primary: #000;
@@ -17,359 +24,172 @@
       --font-title: 'Montserrat', sans-serif;
       --font-elegant: 'Playfair Display', serif;
     }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-title); background-color: var(--secondary); color: var(--primary); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    .product-page { max-width: 1200px; margin: 0 auto; padding: 40px 20px; display: flex; flex-wrap: wrap; gap: 50px; align-items: flex-start; }
+    .product-image { flex: 1 1 450px; }
+    .product-image img { width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
 
-    body {
-      font-family: var(--font-title);
-      background-color: var(--secondary);
-      color: var(--primary);
-      line-height: 1.6;
-    }
+    .product-details { flex: 1 1 500px; }
+    .product-details h1 { font-family: var(--font-elegant); font-size: 3rem; margin-bottom: 20px; }
+    .price-wrapper { margin: 20px 0; }
+    .current-price { font-size: 2rem; font-weight: bold; color: var(--accent); }
+    .old-price { font-size: 1.2rem; text-decoration: line-through; color: #999; margin-left: 15px; }
+    .installments { margin: 10px 0 30px; font-size: 1rem; color: var(--dark-gray); }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+    .buy-button { background-color: var(--primary); color: var(--secondary); padding: 16px 40px; font-size: 1.1rem; border: none; border-radius: 40px; cursor: pointer; font-weight: 600; transition: 0.3s ease; }
+    .buy-button:hover { background-color: var(--accent); transform: scale(1.03); }
 
-    .product-page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 50px;
-      align-items: flex-start;
-    }
+    .email-input { width: 100%; padding: 12px 16px; margin-bottom: 20px; font-size: 1rem; border: 1px solid #ccc; border-radius: 8px; }
 
-    .product-image {
-      flex: 1 1 450px;
-    }
+    .product-description { margin-top: 40px; font-size: 1rem; color: #555; line-height: 1.8; }
+    .back-link { display: block; margin: 40px auto; text-align: center; font-size: 1rem; color: var(--accent); }
 
-    .product-image img {
-      width: 100%;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    }
+    .badge { display: inline-block; background: var(--gold); color: #fff; font-size: 0.85rem; padding: 5px 12px; border-radius: 12px; font-weight: 600; margin-bottom: 15px; }
 
-    
+    .related-products { margin-top: 60px; }
+    .related-products h2 { font-family: var(--font-elegant); margin-bottom: 20px; font-size: 1.8rem; }
+    .related-grid { display: flex; gap: 30px; flex-wrap: wrap; }
+    .related-card { width: 280px; background-color: #fefefe; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; transition: 0.3s ease; }
+    .related-card img { width: 100%; height: 260px; object-fit: cover; }
+    .related-info { padding: 20px; }
+    .related-info h3 { font-size: 1rem; margin-bottom: 6px; }
+    .related-info .price { font-weight: 700; color: var(--accent); }
+    .related-info .old-price { font-size: 0.95rem; color: #999; text-decoration: line-through; }
 
-    .product-details {
-      flex: 1 1 500px;
-    }
+    .faq-section { margin-top: 50px; }
+    .faq-title { font-family: var(--font-elegant); font-size: 2rem; margin-bottom: 25px; }
+    .faq-item { border-bottom: 1px solid #ddd; margin-bottom: 15px; }
+    .faq-question { padding: 15px; cursor: pointer; background-color: var(--light-gray); font-weight: 600; position: relative; }
+    .faq-question:hover { background-color: #ececec; }
+    .faq-answer { display: none; padding: 15px; background-color: #fafafa; }
+    .faq-item.active .faq-answer { display: block; }
 
-    .product-details h1 {
-      font-family: var(--font-elegant);
-      font-size: 3rem;
-      margin-bottom: 20px;
-    }
-
-    .price-wrapper {
-      margin: 20px 0;
-    }
-
-    .current-price {
-      font-size: 2rem;
-      font-weight: bold;
-      color: var(--accent);
-    }
-
-    .old-price {
-      font-size: 1.2rem;
-      text-decoration: line-through;
-      color: #999;
-      margin-left: 15px;
-    }
-
-    .installments {
-      margin: 10px 0 30px;
-      font-size: 1rem;
-      color: var(--dark-gray);
-    }
-
-    .buy-button {
-      background-color: var(--primary);
-      color: var(--secondary);
-      padding: 16px 40px;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.3s ease;
-    }
-
-    .buy-button:hover {
-      background-color: var(--accent);
-      transform: scale(1.03);
-    }
-
-    .product-description {
-      margin-top: 40px;
-      font-size: 1rem;
-      color: #555;
-      line-height: 1.8;
-    }
-
-    .back-link {
-      display: block;
-      margin: 40px auto;
-      text-align: center;
-      font-size: 1rem;
-      color: var(--accent);
-    }
-
-    .badge {
-      display: inline-block;
-      background: var(--gold);
-      color: #fff;
-      font-size: 0.85rem;
-      padding: 5px 12px;
-      border-radius: 12px;
-      font-weight: 600;
-      margin-bottom: 15px;
-    }
-
-    .related-products {
-      margin-top: 60px;
-    }
-
-    .related-products h2 {
-      font-family: var(--font-elegant);
-      margin-bottom: 20px;
-      font-size: 1.8rem;
-    }
-
-    .related-grid {
-      display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
-    }
-
-    .related-card {
-      width: 280px;
-      background-color: #fefefe;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      overflow: hidden;
-      transition: 0.3s ease;
-    }
-
-    .related-card img {
-      width: 100%;
-      height: 260px;
-      object-fit: cover;
-    }
-
-    .related-info {
-      padding: 20px;
-    }
-
-    .related-info h3 {
-      font-size: 1rem;
-      margin-bottom: 6px;
-    }
-
-    .related-info .price {
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .related-info .old-price {
-      font-size: 0.95rem;
-      color: #999;
-      text-decoration: line-through;
-    }
-
-    .faq-section {
-      margin-top: 50px;
-    }
-
-    .faq-title {
-      font-family: var(--font-elegant);
-      font-size: 2rem;
-      margin-bottom: 25px;
-    }
-
-    .faq-item {
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 15px;
-    }
-
-    .faq-question {
-      padding: 15px;
-      cursor: pointer;
-      background-color: var(--light-gray);
-      font-weight: 600;
-      position: relative;
-    }
-
-    .faq-question:hover {
-      background-color: #ececec;
-    }
-
-    .faq-answer {
-      display: none;
-      padding: 15px;
-      background-color: #fafafa;
-    }
-
-    .faq-item.active .faq-answer {
-      display: block;
-    }
-
-    .returns-section {
-      margin-top: 60px;
-      padding: 40px;
-      background-color: #f9f9f9;
-      border-left: 6px solid var(--accent);
-      border-radius: 10px;
-    }
+    .returns-section { margin-top: 60px; padding: 40px; background-color: #f9f9f9; border-left: 6px solid var(--accent); border-radius: 10px; }
   </style>
-
-  <script src="https://sdk.mercadopago.com/js/v2"></script>
-
 </head>
 <body>
+
   <div class="product-page">
     <div class="product-image">
-      <img src="img/212.jpg" alt="212 VIP Black">
+      <img id="detailImage" src="" alt="Produto">
     </div>
     <div class="product-details">
-      <span class="badge">40% OFF + Brinde Exclusivo</span>
-      <h1>212 VIP Black</h1>
+      <span class="badge" id="detailBadge"></span>
+      <h1 id="detailName"></h1>
       <div class="price-wrapper">
-        <span class="current-price">R$ 179,90</span>
-        <span class="old-price">R$ 297,90</span>
+        <span class="current-price" id="detailPrice"></span>
+        <span class="old-price" id="detailOldPrice"></span>
       </div>
-      <p class="installments">ou em até 5x de <strong>R$ 35,98</strong> sem juros</p>
+      <p class="installments">ou em até <span id="detailInstallments"></span> sem juros</p>
 
-<!-- Botão para criar pedido (você pode amarrar o clique para redirecionar para a página de pagamento) -->
-<button id="btn-comprar" class="buy-button" style="margin-top: 20px;">
-  COMPRAR AGORA
-</button>
+      <!-- Campo de e-mail do cliente -->
+      <input type="email" id="email-cliente" placeholder="Seu e-mail" required class="email-input">
 
+      <!-- Botão de compra -->
+      <button id="btnComprar" class="buy-button">COMPRAR AGORA</button>
 
+      <!-- Container do Bricks (checkout) -->
+      <div id="form-checkout" class="bricks-container"></div>
 
-      <div class="product-description">
-        <h2>Descrição</h2>
-        <p><strong>212 VIP Black</strong> é a fragrância ideal para quem quer marcar presença com elegância. Notas de absinto, lavanda e baunilha negra tornam esse perfume magnético e sofisticado.</p>
-        <p>Importado, original e com brinde exclusivo da L'AROMA. Embalagem pronta para presente.</p>
-        <p>Volume: 100ml<br>Concentração: Eau de Parfum (EDP)<br>Gênero: Masculino</p>
-      </div>
-
-      <section class="faq-section">
-        <h2 class="faq-title">Dúvidas Frequentes</h2>
-        <div class="faq-item"><div class="faq-question">O perfume é original?</div><div class="faq-answer">Sim, todos os nossos perfumes são 100% originais e importados, com nota fiscal e lacre de fábrica.</div></div>
-        <div class="faq-item"><div class="faq-question">Em quanto tempo recebo meu pedido?</div><div class="faq-answer">O prazo de entrega varia conforme sua localidade, geralmente entre 2 a 7 dias úteis.</div></div>
-        <div class="faq-item"><div class="faq-question">Acompanha embalagem para presente?</div><div class="faq-answer">Sim! Enviamos com embalagem premium, ideal para presentear.</div></div>
-        <div class="faq-item"><div class="faq-question">Posso parcelar minha compra?</div><div class="faq-answer">Claro! Aceitamos até 5x sem juros no cartão de crédito.</div></div>
-        <div class="faq-item"><div class="faq-question">Recebo código de rastreio?</div><div class="faq-answer">Sim! Assim que o pedido for despachado, você receberá um e-mail com o código de rastreio e o link para acompanhar a entrega em tempo real.</div></div>
-      </section>
-
-      <section class="returns-section">
-        <h2>Trocas & Devoluções</h2>
-        <p>A L'AROMA segue o Código de Defesa do Consumidor e garante uma política de troca e devolução transparente.</p>
-        <p>Em caso de arrependimento, o cliente pode devolver o produto em até 7 dias corridos após o recebimento, sem indícios de uso e com todos os itens incluídos.</p>
-        <p>Se o produto não servir, é possível solicitar a primeira troca gratuitamente dentro do mesmo prazo, desde que o item não tenha sido utilizado.</p>
-        <p>A L'AROMA está comprometida com a sua satisfação e pronta para oferecer suporte sempre que necessário.</p>
-      </section>
+      <div class="product-description" id="detailDesc"></div>
 
       <a href="index.html" class="back-link">← Voltar à Coleção</a>
     </div>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+      <h2 class="faq-title">Dúvidas Frequentes</h2>
+      <div class="faq-item"><div class="faq-question">O perfume é original?</div><div class="faq-answer">Sim, todos os nossos perfumes são 100% originais e importados, com nota fiscal e lacre de fábrica.</div></div>
+      <div class="faq-item"><div class="faq-question">Em quanto tempo recebo meu pedido?</div><div class="faq-answer">O prazo de entrega varia conforme sua localidade, geralmente entre 2 a 7 dias úteis.</div></div>
+      <div class="faq-item"><div class="faq-question">Acompanha embalagem para presente?</div><div class="faq-answer">Sim! Enviamos com embalagem premium, ideal para presentear.</div></div>
+      <div class="faq-item"><div class="faq-question">Posso parcelar minha compra?</div><div class="faq-answer">Claro! Aceitamos até 5x sem juros no cartão de crédito.</div></div>
+      <div class="faq-item"><div class="faq-question">Recebo código de rastreio?</div><div class="faq-answer">Sim! Assim que o pedido for despachado, você receberá um e-mail com o código de rastreio e o link para acompanhar a entrega em tempo real.</div></div>
+    </section>
+
+    <!-- Trocas & Devoluções -->
+    <section class="returns-section">
+      <h2>Trocas & Devoluções</h2>
+      <p>A L'AROMA segue o Código de Defesa do Consumidor e garante uma política de troca e devolução transparente.</p>
+      <p>Em caso de arrependimento, o cliente pode devolver o produto em até 7 dias corridos após o recebimento, sem indícios de uso e com todos os itens incluídos.</p>
+      <p>Se o produto não servir, é possível solicitar a primeira troca gratuitamente dentro do mesmo prazo, desde que o item não tenha sido utilizado.</p>
+      <p>A L'AROMA está comprometida com a sua satisfação e pronta para oferecer suporte sempre que necessário.</p>
+    </section>
+
   </div>
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
 
-  // Buscar produto pelo ID
-  fetch(`http://localhost:8080/api/produtos/${id}`)
-    .then(res => res.json())
-    .then(p => {
-      document.querySelector('.product-image img').src = p.imagem;
-      document.querySelector('.product-image img').alt = p.nome;
-      document.querySelector('.product-details h1').textContent = p.nome;
-      document.querySelector('.current-price').textContent = `R$ ${p.preco.toFixed(2)}`;
-      document.querySelector('.old-price').textContent = `R$ ${p.precoOriginal.toFixed(2)}`;
-      document.querySelector('.installments strong').textContent = `R$ ${(p.preco / 5).toFixed(2)}`;
-      document.querySelector('.badge').textContent = p.promocao;
-      document.querySelector('.product-description').innerHTML = `<h2>Descrição</h2><p>${p.descricao}</p>`;
-    })
-    .catch(() => alert('❌ Produto não encontrado.'));
+  <!-- Script de lógica de produto e checkout -->
+  <script>
+    // Inicializa SDK MercadoPago (substitua pelo seu public key)
+    const mp = new MercadoPago('TEST-40c7de58-7ff3-4625-957b-5f50881fe9f5', { locale: 'pt-BR' });
 
-  // Evento no botão de compra
-  document.querySelector('.buy-button').addEventListener('click', comprarAgora);
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      try {
+        const res = await fetch(`http://localhost:8081/produtos/${id}`);
+        const p = await res.json();
 
-  // Função para criar pedido
-  function comprarAgora() {
-    const email = document.querySelector('#email-cliente').value.trim();
-
-    if (!email) {
-      alert('⚠️ Por favor, informe seu e-mail.');
-      return;
-    }
-
-    fetch('http://localhost:8080/api/pedidos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        produtoId: id,
-        clienteEmail: email
-      })
-    })
-    .then(res => {
-      if (res.ok) {
-        alert("✅ Pedido realizado com sucesso!");
-        document.querySelector('#email-cliente').value = "";
-      } else {
-        alert("❌ Erro ao realizar o pedido.");
+        // Preenche dados na página
+        document.getElementById('detailImage').src = p.imagemUrl;
+        document.getElementById('detailImage').alt = p.nome;
+        document.getElementById('detailName').textContent = p.nome;
+        document.getElementById('detailPrice').textContent = `R$ ${p.preco.toFixed(2)}`;
+        document.getElementById('detailOldPrice').textContent = p.precoOriginal ? `R$ ${p.precoOriginal.toFixed(2)}` : '';
+        document.getElementById('detailInstallments').textContent = `5x de R$ ${(p.preco/5).toFixed(2)}`;
+        document.getElementById('detailBadge').textContent = p.promocao || '';
+        document.getElementById('detailDesc').innerHTML = `<h2>Descrição</h2><p>${p.descricao}</p>`;
+      } catch (err) {
+        console.error('Erro ao carregar produto:', err);
+        alert('❌ Produto não encontrado.');
       }
-    })
-    .catch(() => {
-      alert("⚠️ Erro na conexão com o servidor.");
     });
-  }
-</script>
 
-<script>
-  const mp = new MercadoPago('TEST-40c7de58-7ff3-4625-957b-5f50881fe9f5');
-
-  const bricksBuilder = mp.bricks();
-
-  bricksBuilder.create("cardPayment", "form-checkout", {
-    initialization: {
-      amount: 179.90, // valor do produto (pode ser dinâmico depois)
-    },
-    customization: {
-      paymentMethods: {
-        ticket: 'all',
-        bankTransfer: 'all',
-        creditCard: 'all',
-      },
-    },
-    callbacks: {
-      onReady: () => {
-        console.log("Formulário carregado");
-      },
-      onSubmit: (cardFormData) => {
-        console.log("Dados do cartão:", cardFormData);
-        alert("💳 Pagamento de teste enviado!\nUse cartão de teste para simular.");
-      },
-      onError: (error) => {
-        console.error(error);
-        alert("Erro ao processar pagamento.");
+    document.getElementById('btnComprar').addEventListener('click', async () => {
+      const email = document.getElementById('email-cliente').value.trim();
+      if (!email) {
+        alert('⚠️ Por favor, informe seu e-mail.');
+        return;
       }
-    }
-  });
-</script>
 
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const pedido = {
+        itens: [{ produto: { id: Number(id) }, quantidade: 1 }],
+        clienteEmail: email
+      };
 
+      try {
+        const checkoutRes = await fetch('http://localhost:8081/pedidos/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pedido)
+        });
+        const { preferenceId } = await checkoutRes.json();
+
+        // Renderiza Bricks
+        mp.bricks().create('wallet', 'form-checkout', {
+          initialization: { preferenceId }
+        });
+      } catch (err) {
+        console.error('Erro no checkout:', err);
+        alert('❌ Erro ao iniciar o checkout.');
+      }
+    });
+
+    // FAQ toggle
+    document.querySelectorAll('.faq-question').forEach(q => {
+      q.addEventListener('click', () => {
+        const item = q.parentElement;
+        item.classList.toggle('active');
+      });
+    });
+  </script>
 </body>
 </html>
+
 
 
 
